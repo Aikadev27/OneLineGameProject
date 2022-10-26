@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaoCao", "BaoCao\BaoCao.csproj", "{05AA0971-97DA-4A74-9110-33647B0A1FCA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{05AA0971-97DA-4A74-9110-33647B0A1FCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05AA0971-97DA-4A74-9110-33647B0A1FCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05AA0971-97DA-4A74-9110-33647B0A1FCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05AA0971-97DA-4A74-9110-33647B0A1FCA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A181F87B-AF04-4B38-9490-D7AF0A81511E}
+	EndGlobalSection
+EndGlobal

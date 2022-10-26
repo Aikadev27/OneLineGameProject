@@ -1,0 +1,39 @@
+﻿<Window x:Class="BaoCao.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BaoCao"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"        
+        ResizeMode="NoResize"
+        Background="BurlyWood"
+        Title="Họa Sĩ Tài Lanh" Height="450" Width="600">
+        
+    <StackPanel x:Name="_stackPanel">
+        
+        <StackPanel.Resources>
+            <Style TargetType="Button">
+                <Setter Property="Margin" Value="0,20,0,0"/>
+                <Setter Property="Height" Value="80" />
+                <Setter Property="Width" Value="320" />
+                <Setter Property="Height" Value="50" />
+                <Setter Property="FontSize" Value="36" />
+                <Setter Property="FontFamily" Value="Mistral" />
+                <Setter Property="FontWeight" Value="ExtraLight" />
+                <Setter Property="Foreground" Value="#FF673030" />
+                <Setter Property="BorderBrush" Value="#FF060606"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Top"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Background" Value="DarkGray"/>
+            </Style>
+        </StackPanel.Resources>
+        
+        <Button DockPanel.Dock="Top" Margin="0,70,0,0" Background="#FFC59C43" Click="Button_Click">New Game</Button>
+        <Button DockPanel.Dock="Top" Background="#FFC59C43" IsEnabled="False" >Continue</Button>
+        <Button DockPanel.Dock="Top" Click="setting_ButtonClick" Background="#FFC59C43">Setting</Button>
+        <Button DockPanel.Dock="Top" Click="Exit_ButtonClick" Background="#FFC59C43">Quit</Button>        
+        
+    </StackPanel>
+</Window>
