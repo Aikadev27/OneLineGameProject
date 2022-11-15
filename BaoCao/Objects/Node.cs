@@ -16,163 +16,157 @@ namespace BaoCao
 {
     public class Node : INotifyPropertyChanged
     {
-        private Grid _grid;
-        private Ellipse _ellipse;
         private TextBlock _textBlock;
+        private Ellipse _elp;
+        private Grid _grid;
         private Canvas _parent;
+        private TextBox _textBoxHidden;
 
-        
+
+        public object Tag { get; set; }
+        public double NodeWidth => _elp.Width;
+        public double NodeHeight => _elp.Height;
+        public string NodeText => _textBlock.Text;
+
+
+        #region node property changed event
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string propName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+        #endregion
+
+        #region node click event
+        private event EventHandler<MouseButtonEventArgs> _click;
+        public event EventHandler<MouseButtonEventArgs> Click { add => _click += value; remove => _click -= value; }
+        private void OnClick(MouseButtonEventArgs e) => _click?.Invoke(this, e);
+        #endregion
+
+        #region node remove (remove parent) event
+        private event EventHandler _nodeRemove;
+        public event EventHandler NodeRemove { add => _nodeRemove += value; remove => _nodeRemove -= value; }
+        private void OnNodeRemove() => _nodeRemove?.Invoke(this, new EventArgs());
+        #endregion
 
         public Node()
         {
-            //< Grid  >
-            //    < Ellipse Width = "40" Height = "40" Fill = "DarkOrange"/>
-            //    < TextBox MinWidth = "12" Background = "Transparent" VerticalAlignment = "Center" HorizontalAlignment = "Center" BorderBrush = "Transparent" />
-            //</ Grid >             
             _parent = null;
             _grid = new Grid();
-            _ellipse = new Ellipse()
-            {
-                Width = 40,
-                Height = 40,
-                Fill = Constants.NodeBackgroundColorDefault,                
-            };
+
             _textBlock = new TextBlock()
             {
-                MinWidth = 12,
-                Background = Brushes.Transparent,
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center,
+                HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
+                VerticalAlignment = System.Windows.VerticalAlignment.Center,
                 Foreground = Brushes.White,
-                FontSize = 16,
+                FontSize = Constants.NodeFontSize
             };
-
-
-            ContextMenu menu = new ContextMenu();
-            TextBox txb = new TextBox() { MinWidth = 40 };
-
-            //_textBlock.Text <= txb.Text;
-            _textBlock.SetBinding(
-                TextBlock.TextProperty,
-                new System.Windows.Data.Binding("Text")
-                {
-                    Source = txb
-                });
-            Button btn = new Button()
+            _elp = new Ellipse()
             {
-                Content = "remove"
+                Width = Constants.NodeSize,
+                Height = Constants.NodeSize,
+                Fill = Brushes.OrangeRed
             };
-            btn.Click += (sender, e) =>
+            _textBoxHidden = new TextBox()
+            {
+                Width = 0,
+                Height = 0
+            };
+
+            Button btnRemove = new Button() { Content = "remove" };            
+            TextBox txb = new TextBox()
+            {
+                MinWidth = 50   
+            };
+            ContextMenu contextMenu = new ContextMenu();
+            contextMenu.Items.Add(txb);
+            contextMenu.Items.Add(btnRemove);
+
+            btnRemove.Click += (sender, e) =>
             {
                 this.RemoveParent();
-                menu.IsOpen = false;
+                contextMenu.IsOpen = false;
             };
 
-            menu.Items.Add(txb);
-            menu.Items.Add(btn);
-            _grid.ContextMenu = menu;
 
-
-            _grid.Children.Add(_ellipse);
+            _grid.Children.Add(_elp);
             _grid.Children.Add(_textBlock);
+            _grid.Children.Add(_textBoxHidden);
+            _elp.ContextMenu = contextMenu;
 
+            _textBlock.SetBinding(TextBlock.TextProperty,
+                new System.Windows.Data.Binding(nameof(_textBoxHidden.Text)) { Source = _textBoxHidden });
 
-            _grid.MouseDown += (sender, e) =>
+            txb.SetBinding(TextBox.TextProperty, new System.Windows.Data.Binding(nameof(_textBoxHidden.Text))
             {
-                e.Handled = true;
-                OnClick();
-            };           
+                Source = _textBoxHidden,
+                UpdateSourceTrigger = System.Windows.Data.UpdateSourceTrigger.PropertyChanged
+            });
+
+            _elp.MouseDown += (sender, e) => OnClick(e);
         }
 
-        
-        public Point GetLocation()
+        public void SetParent(Canvas parent)
         {
-            Point locate = new Point(
-                    x: Canvas.GetLeft(_grid), 
-                    y: Canvas.GetTop(_grid));            
-            return locate;
-        }
-
-        public Point GetCenterLocation()
-        {
-            Point locate = new Point(
-                    x: Canvas.GetLeft(_grid) + _ellipse.Width / 2,
-                    y: Canvas.GetTop(_grid) + _ellipse.Height / 2);
-            return locate;
-        }
-
-        public void AddParent(Canvas canvas)
-        {
-            _parent = canvas;
+            _parent = parent;
             _parent.Children.Add(_grid);
         }
 
         public void RemoveParent()
         {
-            if (_parent != null)
-            {
-                _parent.Children.Remove(_grid);
-                _parent = null;
-            }
+            _parent.Children.Remove(_grid);
+            _parent = null;
+            OnNodeRemove(); // invoke NodeRemove event
         }
 
-        public void SetLocation(Point locate)
+        public void SetLocation(Point point)
         {
-            Canvas.SetLeft(_grid, locate.X);
-            Canvas.SetTop(_grid, locate.Y);
-
+            Canvas.SetLeft(_grid, point.X);
+            Canvas.SetTop(_grid, point.Y);
             OnPropertyChanged("Location");
         }
 
-        public void SetCenterLocation(Point topLeftLocate)
+        public void SetCenterLocation(Point centerPoint)
         {
-            topLeftLocate.X -= _ellipse.Width / 2;
-            topLeftLocate.Y -= _ellipse.Height / 2;
-
-            Canvas.SetLeft(_grid, topLeftLocate.X);
-            Canvas.SetTop(_grid, topLeftLocate.Y);
-
-            OnPropertyChanged("Location");
+            centerPoint.X -= NodeWidth / 2;
+            centerPoint.Y -= NodeHeight / 2;
+            SetLocation(centerPoint);
         }
 
-        public bool CheckPointIn(Point locate)
+        public Point GetLocation()
+        {
+            return new Point(Canvas.GetLeft(_grid), Canvas.GetTop(_grid));
+        }
+
+        public Point GetCenterLocation()
+        {
+            return new Point(Canvas.GetLeft(_grid) + NodeWidth / 2, Canvas.GetTop(_grid) + NodeHeight / 2);
+        }
+
+        public bool CheckPointIn(Point point)
         {
             var topLeft = GetLocation();
-            var bottomRight = new Point(topLeft.X + _ellipse.Width, topLeft.Y + _ellipse.Height);
-            return topLeft.X <= locate.X && locate.X <= bottomRight.X
-                && topLeft.Y <= locate.Y && locate.Y <= bottomRight.Y;
-        }
-
-        public void Select()
-        {
-            _ellipse.Fill = Constants.NodeBackgroundColorSelect;
-            _ellipse.StrokeThickness = 2;
-            _ellipse.Stroke = Brushes.Coral;
+            point.X -= topLeft.X;
+            point.Y -= topLeft.Y;
+            return 0 <= point.X && point.X <= NodeWidth
+                && 0 <= point.Y && point.Y <= NodeHeight;
         }
 
         public void Default()
         {
-            _ellipse.Fill = Constants.NodeBackgroundColorDefault;
-            _ellipse.StrokeThickness = 0;
+            _elp.Fill = Constants.NodeBackgroundColorDefault;
         }
 
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string propName)
+        public void Select()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+            _elp.Fill = Constants.NodeBackgroundColorSelect;
         }
 
-        private event EventHandler _click;
-        public event EventHandler Click
+        public void SetFocus()
         {
-            add => _click += value;
-            remove => _click -= value;
+            _textBoxHidden.Focus();
         }
-        private void OnClick()
+
+        public void ClearFocus()
         {
-            _click?.Invoke(this, new EventArgs());
+            Keyboard.ClearFocus();
         }
     }
 }

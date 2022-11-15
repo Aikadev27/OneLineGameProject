@@ -11,7 +11,10 @@ namespace BaoCao
 {
     static public class Constants
     {
-        public static readonly Brush BoardBackgroundColor = ColorRGB(40, 75,99);
+        public static readonly double NodeSize = 55;
+        public static readonly double NodeFontSize = 16;
+
+        public static readonly Brush BoardBackgroundColor = ColorRGB(188, 184, 177);
 
 
         public static readonly Brush NodeBackgroundColorSelect = ColorRGB(0,175,185);
@@ -19,7 +22,7 @@ namespace BaoCao
         
 
 
-        public static readonly Brush NodeBackgroundColorDefault = ColorRGB(242,100,25);
+        public static readonly Brush NodeBackgroundColorDefault = Brushes.OrangeRed;
 
 
         public static Brush ColorRGB(int r, int g, int b, int alpha=255)

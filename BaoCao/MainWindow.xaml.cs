@@ -51,11 +51,11 @@ namespace BaoCao
         /// <param name="e"></param>
         private void Exit_MainWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            MessageBoxResult r =  MessageBox.Show("Ban co muon thoat khoi chuong trinh?", "...", MessageBoxButton.YesNo);
-            if (r == MessageBoxResult.No)
-            {
-                e.Cancel = true;
-            }
+            //MessageBoxResult r =  MessageBox.Show("Ban co muon thoat khoi chuong trinh?", "...", MessageBoxButton.YesNo);
+            //if (r == MessageBoxResult.No)
+            //{
+            //    e.Cancel = true;
+            //}
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Ink;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Xml.Linq;
@@ -19,22 +20,48 @@ namespace BaoCao
         private Node _uNode;
         private Node _vNode;
 
+
+        #region edge remove (remove parent) event
+        private event EventHandler _edgeRemove;
+        public event EventHandler EdgeRemove { add => _edgeRemove += value; remove => _edgeRemove -= value; }
+        private void OnEdgeRemove() => _edgeRemove?.Invoke(this, new EventArgs());
+        #endregion
+
+
         public Node UNode { get => _uNode; private set => _uNode = value; }
         public Node VNode { get => _vNode; private set => _vNode = value; }
+        public Point StartPoint => new Point(_line.X1, _line.Y1);
+        public Point EndPoint => new Point(_line.X2, _line.Y2);
 
-        public Edge()
+        public Edge(Canvas parent, Node uNode = null, Node vNode = null)
         {
             //< Line X1 = "20" X2 = "150" Y1 = "13" Y2 = "200"
             //      Stroke = "Black" StrokeThickness = "2" />
-            _parent = null;
-            UNode = null;
-            VNode = null;
+
             _line = new Line()
             {
                 Stroke = Brushes.Black,
-                StrokeThickness = 2
+                StrokeThickness = 3
             };
+            SetUNode(uNode);
+            SetVNode(vNode);
+            AddParent(parent);
             Canvas.SetZIndex(_line, -1);
+
+            ContextMenu contextMenu = new ContextMenu();
+            Button btn = new Button()
+            {
+                Content = "remove"
+            };
+            btn.Click += (sender, e) =>
+            {
+                RemoveParent();
+                contextMenu.IsOpen = false;
+            };
+            contextMenu.Items.Add(btn);
+
+            _line.ContextMenu = contextMenu;
+
         }
 
         private void SetStartPoint(Point startPoint)
@@ -49,12 +76,13 @@ namespace BaoCao
             _line.Y2 = endPoint.Y;
         }
 
-        public void SetUNode(Node uNode)
+        public void SetUNode(Node value)
         {
-            UNode = uNode;
-            SetStartPoint(uNode.GetCenterLocation());
+            if (value == VNode && VNode != null) return;
+            UNode = value;
+            if (UNode == null) return;
 
-
+            SetStartPoint(value.GetCenterLocation());
             UNode.PropertyChanged += (sender, e) =>
             {
                 if (e.PropertyName == "Location")
@@ -64,11 +92,13 @@ namespace BaoCao
             };
         }
 
-        public void SetVNode(Node vNode)
+        public void SetVNode(Node value)
         {
-            VNode = vNode;
-            SetEndPoint(vNode.GetCenterLocation());
+            if (value == UNode && UNode != null) return;
+            VNode = value;
+            if (value == null) return;
 
+            SetEndPoint(value.GetCenterLocation());
             VNode.PropertyChanged += (sender, e) =>
             {
                 if (e.PropertyName == "Location")
@@ -90,6 +120,7 @@ namespace BaoCao
             {
                 _parent.Children.Remove(_line);
                 _parent = null;
+                OnEdgeRemove();
             }
         }
     }

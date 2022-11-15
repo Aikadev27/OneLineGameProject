@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,11 +20,12 @@ using System.Xml.Linq;
  * [x] chọn nút ===> click nút
  * [x] vẽ nút ===> ctrl + click chuột trên canvas
  * [x] di chuyển nút ===> alt + click chuột trên nút + di chuột
- * [x] xóa nút ==> chọn nút + del
- * [ ] vẽ cung ===> (shift + click trên nút) (di chuột + đè shift + nút chưa được thả)
- * [ ] hủy cung ===> vẽ cung --> thả chuột không trên nút nào
- *  
- * [ ] xóa cung, xóa node ---> xóa nó ra khỏi list
+ * [x]xóa nút ==> chọn nút + del
+ * [x] xóa cung
+ * [x] vẽ cung ===> (shift + click trên nút) (di chuột + đè shift + nút chưa được thả)
+ * [x] hủy cung ===> vẽ cung --> thả chuột không trên nút nào
+ * [x] xóa cung, xóa node ---> xóa nó ra khỏi list
+ * 
  */
 
 namespace BaoCao
@@ -43,18 +45,28 @@ namespace BaoCao
         public Node SelectedNode
         {
             get => _selectedNode;
-            set
+            private set
             {
                 _selectedNode?.Default();
+                _selectedNode?.ClearFocus();
                 _selectedNode = value;
                 _selectedNode?.Select();
+                _selectedNode?.SetFocus();
             }
         }
+        public Edge SelectedEdge
+        {
+            get => _selectedEdge;
+            private set => _selectedEdge = value;
+        }
+
 
         public bool IsLeftCtrlDown => Keyboard.IsKeyDown(Key.LeftCtrl);
         public bool IsMouseLeftButtonDown => Mouse.LeftButton == MouseButtonState.Pressed;
         public bool IsLeftAltDown => Keyboard.IsKeyDown(Key.LeftAlt);
         public bool IsLeftShiftDown => Keyboard.IsKeyDown(Key.LeftShift);
+        public bool IsDelKeyDown => Keyboard.IsKeyDown(Key.Delete);
+
         #endregion
 
 
@@ -68,96 +80,96 @@ namespace BaoCao
             _nodeList = new List<Node>();
             _edgeList = new List<Edge>();
             SelectedNode = null;
-            _selectedEdge = null;
-
-            Button btn = new Button()
-            {
-                Content = "",
-                Width = 200,
-                Height = 50,
-                FontSize = 24
-            };
-
-            //Edge edge = new Edge();
-            //edge.AddParent(_canvasGameBoard);
-            //edge.SetStartPoint(new Point(0, 0));
-            //edge.SetEndPoint(new Point(20, 13));
+            SelectedEdge = null;
 
             _canvasGameBoard.MouseDown += (sender, e) =>
             {
-
-                if (IsLeftCtrlDown)
+                if (IsLeftCtrlDown && IsMouseLeftButtonDown)
                 {
-                    var mousePosition = e.GetPosition(_canvasGameBoard);
-
-                    Node node = new Node();
-                    node.AddParent(_canvasGameBoard);
-                    node.SetCenterLocation(mousePosition);
-                    node.Click += (sender1, e1) =>
-                    {
-                        SelectedNode = node;
-                        if (IsLeftShiftDown)
-                        {
-                            Edge edge = new Edge();
-                            edge.AddParent(_canvasGameBoard);
-                            edge.SetUNode(SelectedNode);
-                            edge.SetEndPoint(SelectedNode.GetCenterLocation());
-                            _selectedEdge = edge;
-                        }
-                    };
+                    var pos = e.GetPosition(_canvasGameBoard);
+                    var node = CreateNode(pos.X, pos.Y);
                     _nodeList.Add(node);
                 }
-                else
-                {
-                    SelectedNode = null;
-                    _selectedEdge = null;
-                }
             };
-
             _canvasGameBoard.MouseMove += (sender, e) =>
             {
-
-                if (IsLeftAltDown && SelectedNode != null && IsMouseLeftButtonDown)
+                var pos = e.GetPosition(_canvasGameBoard);
+                if (SelectedNode != null && IsLeftAltDown
+                    && SelectedNode.CheckPointIn(pos)
+                    && IsMouseLeftButtonDown)
                 {
-                    SelectedNode.SetCenterLocation(e.GetPosition(_canvasGameBoard));
+                    SelectedNode.SetCenterLocation(pos);
                 }
-                else if (_selectedEdge != null )
-                {
-                    if (IsMouseLeftButtonDown && IsLeftShiftDown)
-                    {
-                        _selectedEdge.SetEndPoint(e.GetPosition(_canvasGameBoard));
-                    }
-                    else
-                    {
-                        var mousePosition = e.GetPosition(_canvasGameBoard);
 
-                        foreach (var node in _nodeList)
+                // ve cung :))
+                if (SelectedEdge != null && IsLeftShiftDown && IsMouseLeftButtonDown)
+                {
+                    SelectedEdge.SetEndPoint(pos);
+                }
+                else if (SelectedEdge != null)
+                {
+                    bool IsAccept = false;
+                    foreach (var node in _nodeList)
+                    {
+                        if (node.CheckPointIn(pos) && node != SelectedEdge.UNode)
                         {
-                            if (node.CheckPointIn(mousePosition))
-                            {
-                                _selectedEdge.SetVNode(node);
-                                _edgeList.Add(_selectedEdge);
-                                _selectedEdge = null;
-                                return;
-                            }
-                        }                        
-                                                
-                        _selectedEdge.RemoveParent();
-                        _selectedEdge = null;
-                        
-                    }
-                }
-            };
+                            // accept edge 
+                            SelectedEdge.SetVNode(node);
+                            SelectedEdge.EdgeRemove += (sender1, e1) => _edgeList.Remove(sender1 as Edge);
+                            _edgeList.Add(SelectedEdge);
 
-            this.KeyDown += (sender, e) =>
-            {
-                if (Keyboard.IsKeyDown(Key.Delete))
-                {
-                    _selectedNode?.RemoveParent();
-                    _selectedNode = null;
+                            SelectedEdge = null;
+                            IsAccept = true;
+                            break;
+                        }
+                    }
+                    // huy cung
+                    if (!IsAccept)
+                    {
+                        SelectedEdge.RemoveParent();
+                        SelectedEdge = null;
+                    }
                 }
             };
         }
 
+        public Node CreateNode(double x, double y)
+        {
+            Node node = new Node();
+            node.SetParent(_canvasGameBoard);
+            node.SetCenterLocation(new Point(x, y));
+            // TODO: tach node.click ra ham rieng
+            node.Click += (sender1, e1) =>
+            {
+                SelectedNode = node;
+                e1.Handled = true;
+                if (IsLeftShiftDown)
+                {
+                    Edge edge = new Edge(_canvasGameBoard, SelectedNode);
+                    edge.SetEndPoint(SelectedNode.GetCenterLocation()); // !IMPORTANT : khong duoc xoa dong nay
+
+                    SelectedEdge = edge;
+                }
+            };
+            node.NodeRemove += (sender, e) =>
+            {
+                Stack<int> edgeRemoveIndex = new Stack<int>();
+                for (int i = 0; i < _edgeList.Count; i++)
+                {
+                    Edge edge = _edgeList[i];
+                    if (edge.UNode == node || edge.VNode == node)
+                    {
+                        edgeRemoveIndex.Push(i);
+                    }
+                }
+                while (edgeRemoveIndex.Count > 0)
+                {
+                    _edgeList[edgeRemoveIndex.Pop()].RemoveParent();
+                }
+                _nodeList.Remove(node);
+            };
+
+            return node;
+        }
     }
 }
