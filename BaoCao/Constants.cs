@@ -18,11 +18,14 @@ namespace BaoCao
 
 
         public static readonly Brush NodeBackgroundColorSelect = ColorRGB(0,175,185);
+        public static readonly Brush EdgeColorPlay = Brushes.Blue;
 
-        
 
 
         public static readonly Brush NodeBackgroundColorDefault = Brushes.OrangeRed;
+        public static readonly Brush EdgeColorDefault = Brushes.Black;
+        public static readonly double EdgeThickness = 3;
+
 
 
         public static Brush ColorRGB(int r, int g, int b, int alpha=255)

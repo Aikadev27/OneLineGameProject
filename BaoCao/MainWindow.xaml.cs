@@ -103,7 +103,12 @@ namespace BaoCao
         /// <param name="e"></param>
         private void Design_ButtonClick(object sender, RoutedEventArgs e)
         {
+            this.Hide();
 
+            PlayBoardWindow playBoardWindow = new PlayBoardWindow(isDesignMode: true);
+            playBoardWindow.ShowDialog();
+
+            this.Show();
         }
     }
 }

@@ -33,6 +33,8 @@ namespace BaoCao
         public Node VNode { get => _vNode; private set => _vNode = value; }
         public Point StartPoint => new Point(_line.X1, _line.Y1);
         public Point EndPoint => new Point(_line.X2, _line.Y2);
+        public Brush EdgeColor { get => _line.Stroke; set => _line.Stroke = value; }
+
 
         public Edge(Canvas parent, Node uNode = null, Node vNode = null)
         {
@@ -41,8 +43,8 @@ namespace BaoCao
 
             _line = new Line()
             {
-                Stroke = Brushes.Black,
-                StrokeThickness = 3
+                Stroke = Constants.EdgeColorDefault,
+                StrokeThickness = Constants.EdgeThickness
             };
             SetUNode(uNode);
             SetVNode(vNode);

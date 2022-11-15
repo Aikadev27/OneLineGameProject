@@ -73,6 +73,7 @@ namespace BaoCao
 
                 Node node = createNodeFunc(x, y);
                 node.NodeText = args[2];
+                node.Tag = i - 1;
                 nodes.Add(node);
             }
 
@@ -84,6 +85,7 @@ namespace BaoCao
                 if (!Int32.TryParse(args[0], out uIndex) 
                     || !Int32.TryParse(args[1], out vIndex)) return false;
                 Edge edge = createEdgeFunc(nodes[uIndex], nodes[vIndex]);
+                edge.Tag = i - nodeSize - 1;
                 edges.Add(edge);
             }
 
