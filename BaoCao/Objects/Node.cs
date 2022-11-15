@@ -26,7 +26,7 @@ namespace BaoCao
         public object Tag { get; set; }
         public double NodeWidth => _elp.Width;
         public double NodeHeight => _elp.Height;
-        public string NodeText => _textBlock.Text;
+        public string NodeText { get => _textBlock.Text; set => _textBoxHidden.Text = value; }
 
 
         #region node property changed event
@@ -70,10 +70,10 @@ namespace BaoCao
                 Height = 0
             };
 
-            Button btnRemove = new Button() { Content = "remove" };            
+            Button btnRemove = new Button() { Content = "remove" };
             TextBox txb = new TextBox()
             {
-                MinWidth = 50   
+                MinWidth = 50
             };
             ContextMenu contextMenu = new ContextMenu();
             contextMenu.Items.Add(txb);

@@ -84,7 +84,7 @@ namespace BaoCao {
             case 2:
             
             #line 33 "..\..\MainWindow.xaml"
-            ((System.Windows.Controls.Button)(target)).Click += new System.Windows.RoutedEventHandler(this.Button_Click);
+            ((System.Windows.Controls.Button)(target)).Click += new System.Windows.RoutedEventHandler(this._ButtonClick);
             
             #line default
             #line hidden
@@ -92,7 +92,7 @@ namespace BaoCao {
             case 3:
             
             #line 35 "..\..\MainWindow.xaml"
-            ((System.Windows.Controls.Button)(target)).Click += new System.Windows.RoutedEventHandler(this.setting_ButtonClick);
+            ((System.Windows.Controls.Button)(target)).Click += new System.Windows.RoutedEventHandler(this.Setting_ButtonClick);
             
             #line default
             #line hidden

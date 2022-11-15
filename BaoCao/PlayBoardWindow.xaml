@@ -10,7 +10,7 @@
     <DockPanel>
 
         <ToolBarTray DockPanel.Dock="Top" >
-            <ToolBar>
+            <ToolBar Name="_toolBar">
                 <Button Height="40" FontSize="21" Margin="10,0,0,0" >Home</Button>
                 <Button Height="40" FontSize="21" Margin="10,0,0,0" >Prev</Button>
                 <Button Height="40" FontSize="21" Margin="10,0,0,0" >Next</Button>

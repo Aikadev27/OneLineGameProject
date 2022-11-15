@@ -28,6 +28,7 @@ namespace BaoCao
         #endregion
 
 
+        public object Tag { get; set; }
         public Node UNode { get => _uNode; private set => _uNode = value; }
         public Node VNode { get => _vNode; private set => _vNode = value; }
         public Point StartPoint => new Point(_line.X1, _line.Y1);
@@ -45,7 +46,12 @@ namespace BaoCao
             };
             SetUNode(uNode);
             SetVNode(vNode);
-            AddParent(parent);
+            _parent = null; 
+            if (parent != null)
+            {
+                AddParent(parent);
+            }
+                
             Canvas.SetZIndex(_line, -1);
 
             ContextMenu contextMenu = new ContextMenu();

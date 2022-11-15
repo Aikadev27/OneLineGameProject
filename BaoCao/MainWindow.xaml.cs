@@ -73,7 +73,7 @@ namespace BaoCao
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void setting_ButtonClick(object sender, RoutedEventArgs e)
+        private void Setting_ButtonClick(object sender, RoutedEventArgs e)
         {
             
             _stWindow = new SettingWindow();
@@ -86,7 +86,7 @@ namespace BaoCao
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void _ButtonClick(object sender, RoutedEventArgs e)
         {
             this.Hide();
 
@@ -94,6 +94,16 @@ namespace BaoCao
             playBoardWindow.ShowDialog();
 
             this.Show();
+        }
+
+        /// <summary>
+        /// design game board
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Design_ButtonClick(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

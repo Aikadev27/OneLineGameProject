@@ -30,9 +30,9 @@
             </Style>
         </StackPanel.Resources>
         
-        <Button DockPanel.Dock="Top" Margin="0,70,0,0" Background="#FFC59C43" Click="Button_Click">New Game</Button>
-        <Button DockPanel.Dock="Top" Background="#FFC59C43" IsEnabled="False" >Continue</Button>
-        <Button DockPanel.Dock="Top" Click="setting_ButtonClick" Background="#FFC59C43">Setting</Button>
+        <Button DockPanel.Dock="Top" Margin="0,70,0,0" Background="#FFC59C43" Click="_ButtonClick">New Game</Button>
+        <Button DockPanel.Dock="Top" Background="#FFC59C43" Click="Design_ButtonClick" >Design</Button>
+        <Button DockPanel.Dock="Top" Click="Setting_ButtonClick" Background="#FFC59C43">Setting</Button>
         <Button DockPanel.Dock="Top" Click="Exit_ButtonClick" Background="#FFC59C43">Quit</Button>        
         
     </StackPanel>
